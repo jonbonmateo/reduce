@@ -1,64 +1,28 @@
-name: PR Review with OpenAI
+name: OpenAI PR Review
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize]
 
 jobs:
   review:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '16'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
 
-    - name: Install dependencies
-      run: npm install
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install openai requests
 
-    - name: Generate Review with OpenAI
-      env:
-        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      run: |
-        # Install axios to make HTTP requests
-        npm install axios
-
-        # Read the PR diff from the event file path
-        const fs = require('fs');
-        const prDiff = fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf-8');  # Read the diff from the GitHub event
-
-        const openAiApiKey = process.env.OPENAI_API_KEY;
-        const reviewPrompt = `Review this code and provide suggestions for improvement: \n${prDiff}`;
-
-        const axios = require('axios');
-        axios.post('https://api.openai.com/v1/completions', {
-          model: 'gpt-4',  # Or another model you prefer
-          prompt: reviewPrompt,
-          max_tokens: 1000
-        }, {
-          headers: {
-            'Authorization': `Bearer ${openAiApiKey}`,  # Properly formatted Authorization header
-            'Content-Type': 'application/json',
-          }
-        })
-        .then(response => {
-          const reviewComment = response.data.choices[0].text.trim();
-          
-          // Construct the GitHub API comment URL
-          const commentUrl = `https://api.github.com/repos/${process.env.GITHUB_REPOSITORY}/issues/${process.env.GITHUB_REF.split("/")[2]}/comments`;
-
-          // Post the review as a comment on the PR
-          axios.post(commentUrl, {
-            body: reviewComment
-          }, {
-            headers: {
-              'Authorization': `Bearer ${{ secrets.GITHUB_TOKEN }}`,  # Properly formatted GitHub token
-              'Content-Type': 'application/json',
-            }
-          });
-        })
-        .catch(error => console.error('Error:', error));
+      - name: Run OpenAI PR Review
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          python .github/scripts/openai_pr_review.py
