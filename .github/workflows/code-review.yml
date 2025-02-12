@@ -7,10 +7,6 @@ jobs:
   review:
     runs-on: ubuntu-latest
     steps:
-
-      - name: Debug API Key
-        run: echo "API Key: ${{ secrets.OPENAI_API_KEY }}"
-  
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -25,13 +21,13 @@ jobs:
 
       - name: Run OpenAI PR Review
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}  # Correctly pass the API key
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           python3 - <<EOF
           import openai
           import os
 
-          openai.api_key = os.getenv("OPENAI_API_KEY")  # Use the API key directly
+          openai.api_key = os.getenv("OPENAI_API_KEY")
 
           # Fetch PR changes (example)
           pr_diff = os.popen("git diff HEAD^ HEAD").read()
