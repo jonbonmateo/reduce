@@ -13,7 +13,7 @@ const SongDetail = ({mySelectedSong}) => {
 
     return(
         <div>
-            <h3>Details for:</h3>
+            <h3>Details fors:</h3>
             <p><b>Title:</b> {mySelectedSong.title} </p>
             <p><b>Author:</b> {mySelectedSong.author}  </p>
             <p><b>Duration:</b> {mySelectedSong.duration} </p>

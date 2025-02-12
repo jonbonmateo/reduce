@@ -9,6 +9,7 @@ export const fetchPosts = () => {
         //     type: 'FETCH_POST',
         //     payload: response
         // }
+        console.log("response: ",  response);
 
         dispatch({
             type:'FETCH_POSTS',
