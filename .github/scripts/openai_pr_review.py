@@ -9,7 +9,7 @@ pr_diff = os.popen("git diff HEAD^ HEAD").read()
 
 # Generate review using OpenAI
 response = client.chat.completions.create(
-    model="gpt-4",  # Use "gpt-3.5-turbo" if you don't have access to GPT-4
+    model="gpt-3.5-turbo", 
     messages=[
         {"role": "system", "content": "You are a helpful code reviewer. Provide concise and actionable feedback on the following code changes."},
         {"role": "user", "content": f"Review the following code changes:\n\n{pr_diff}"}
