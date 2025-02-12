@@ -21,19 +21,19 @@ jobs:
 
       - name: Run OpenAI PR Review
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}  # Pass the API key
         run: |
           python3 - <<EOF
-          import openai
+          from openai import OpenAI
           import os
 
-          openai.api_key = os.getenv("OPENAI_API_KEY")
+          client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
           # Fetch PR changes (example)
           pr_diff = os.popen("git diff HEAD^ HEAD").read()
 
           # Generate review using OpenAI
-          response = openai.ChatCompletion.create(
+          response = client.chat.completions.create(
             model="gpt-4",
             messages=[
               {"role": "system", "content": "You are a helpful code reviewer."},
@@ -42,7 +42,7 @@ jobs:
           )
 
           # Post review as a comment
-          review = response['choices'][0]['message']['content']
+          review = response.choices[0].message.content
           print(f"::set-output name=review::{review}")
           EOF
 
